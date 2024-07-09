@@ -29,6 +29,7 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .httpBasic(httpBasic -> httpBasic.disable()) // HTTP 기본 인증을 하지 않도록 설정
