@@ -1,22 +1,28 @@
 package com.ChK.PlusTalk.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
-@Entity // 디비로 생성
-@Table(name = "CHATROOM") // 테이블 이름 정의
-@Getter
-@Setter
-@ToString
+@Data
 public class Chatroom {
-    @Id
-    @Column(name = "ROOM_ID")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long roomId;
-    private String roomName;
-    private LocalDateTime createDate;
+
+    private String chatRoomId;  // DynamoDB의 파티션 키
+    private Set<String> participantId;  // DynamoDB의 정렬 키
+    private String chatRoomName;
+    private LocalDateTime createdTime;
+
+    public static class LocalDateTimeConverter {
+        private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+        public static String convert(LocalDateTime time) {
+            return time.format(FORMATTER);
+        }
+
+        public static LocalDateTime unconvert(String stringValue) {
+            return LocalDateTime.parse(stringValue, FORMATTER);
+        }
+    }
 }

@@ -4,6 +4,7 @@ import com.ChK.PlusTalk.constant.Authority;
 import com.ChK.PlusTalk.constant.Existence;
 import com.ChK.PlusTalk.constant.Gender;
 import com.ChK.PlusTalk.dto.MemberRequestDto;
+import com.ChK.PlusTalk.dto.MemberResponseDto;
 import com.ChK.PlusTalk.entity.Member;
 import com.ChK.PlusTalk.repository.MemberRepository;
 import jakarta.servlet.http.HttpSession;
@@ -28,7 +29,7 @@ public class MemberService {
     private final HttpSession session;
     private final PasswordEncoder passwordEncoder;
 
-    public Member registerMember(MemberRequestDto memberRequestDto) {
+    public MemberResponseDto registerMember(MemberRequestDto memberRequestDto) {
         // 패스워드 암호화
         String encodedPassword = passwordEncoder.encode(memberRequestDto.getPassword());
 
@@ -46,7 +47,16 @@ public class MemberService {
                 .build();
 
         // 회원 저장
-        return memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
+
+        // MemberResponseDto로 변환 후 반환
+        return MemberResponseDto.builder()
+                .memberId(savedMember.getMemberId())
+                .email(savedMember.getEmail())
+                .signUpTime(savedMember.getSignUpTime())
+                .authority(savedMember.getAuthority())
+                .existence(savedMember.getExistence())
+                .build();
     }
 
     public Member loginMember(String email, String password) throws Exception {

@@ -4,6 +4,7 @@ import com.ChK.PlusTalk.constant.Authority;
 import com.ChK.PlusTalk.constant.Gender;
 import com.ChK.PlusTalk.constant.Existence;
 import com.ChK.PlusTalk.entity.Member;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL) // null인 필드는 JSON에서 제외
 public class MemberRequestDto {
     private String email;
     private String password;
@@ -41,6 +43,7 @@ public class MemberRequestDto {
                 .authority(authority) // 회원 종류
                 .build();
     }
+
     // 로그인시 넘겨받은 아이디와 비밀번호 조합으로 토큰 생성 준비
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(email, password);

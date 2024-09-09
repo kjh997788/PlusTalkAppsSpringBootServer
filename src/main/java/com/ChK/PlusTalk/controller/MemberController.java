@@ -7,11 +7,10 @@ import com.ChK.PlusTalk.entity.Member;
 import com.ChK.PlusTalk.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -21,9 +20,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/register")
-    public ResponseEntity<Member> registerMember(@RequestBody MemberRequestDto memberRequestDto) throws Exception {
-        Member member = memberService.registerMember(memberRequestDto);
-        return ResponseEntity.ok(member);
+    public ResponseEntity<MemberResponseDto> registerMember(@RequestBody MemberRequestDto memberRequestDto) throws Exception {
+        MemberResponseDto memberResponseDto = memberService.registerMember(memberRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberResponseDto);
     }
 
     @PostMapping("/login")
@@ -32,9 +31,10 @@ public class MemberController {
         return ResponseEntity.ok(member);
     }
 
-    @GetMapping("/memberlist")
+    @GetMapping("/memberinfo")
     public ResponseEntity<Member> memberList(@RequestParam String email) {
-        Member members = memberService.memberList(email);
-        return ResponseEntity.ok(members);
+        Member member = memberService.memberList(email);
+        return ResponseEntity.ok(member);
     }
+
 }
