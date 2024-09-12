@@ -12,16 +12,16 @@ import java.time.LocalDateTime;
 
 
 @Entity // 디비로 생성
-@Table(name = "MEMBER") // 테이블 이름 정의
+@Table(name = "member") // 테이블 이름 정의
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor // 디폴트 생성자 생성
 public class Member {
-    @Id
     @Column(name = "MEMBER_ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long memberId;
+    @Id
     @Column(unique = true)
     private String email;
     private String password;

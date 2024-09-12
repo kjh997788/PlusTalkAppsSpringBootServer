@@ -28,6 +28,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final HttpSession session;
     private final PasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
 
     public MemberResponseDto registerMember(MemberRequestDto memberRequestDto) {
         // 패스워드 암호화
@@ -51,7 +52,7 @@ public class MemberService {
 
         // MemberResponseDto로 변환 후 반환
         return MemberResponseDto.builder()
-                .memberId(savedMember.getMemberId())
+//                .memberId(savedMember.getMemberId())
                 .email(savedMember.getEmail())
                 .signUpTime(savedMember.getSignUpTime())
                 .authority(savedMember.getAuthority())
@@ -59,7 +60,7 @@ public class MemberService {
                 .build();
     }
 
-    public Member loginMember(String email, String password) throws Exception {
+    public MemberResponseDto loginMember(String email, String password) throws Exception {
         // 이메일로 회원 조회
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
         if (optionalMember.isPresent()) {
@@ -68,7 +69,12 @@ public class MemberService {
             if (passwordEncoder.matches(password, member.getPassword())) {
                 // 세션에 회원 정보 저장
                 session.setAttribute("member", member);
-                return member;
+                return MemberResponseDto.builder()
+//                        .memberId(member.getMemberId())
+                        .email(member.getEmail())
+                        .authority(member.getAuthority())
+                        .existence(member.getExistence())
+                        .build();
             } else {
                 throw new Exception("비밀번호가 일치하지 않습니다.");
             }
@@ -77,10 +83,36 @@ public class MemberService {
         }
     }
 
-    public Member memberList(String email) {
+    // 멤버 정보 조회
+    public MemberResponseDto memberList(String email) throws Exception {
         Optional<Member> optionalMember =memberRepository.findByEmail(email);
-        Member member = optionalMember.get();
-        // 모든 회원 정보 조회
-        return member;
+        if (optionalMember.isPresent()){
+            Member member = optionalMember.get();
+                return MemberResponseDto.builder()
+//                        .memberId(member.getMemberId())
+                        .email(member.getEmail())
+                        .name(member.getName())
+                        .phone(member.getPhone())
+                        .birthday(member.getBirthday())
+                        .gender(member.getGender())
+                        .signUpTime(member.getSignUpTime())
+                        .profileImgUrl(s3Service.generateGetPreSignedUrl(member.getEmail()))
+                        .intro(member.getIntro())
+                        .authority(member.getAuthority())
+                        .existence(member.getExistence())
+                        .build();
+        } else {
+            throw new Exception("회원 정보를 찾을 수 없습니다.");
+        }
+    }
+
+    // 멤버 정보 수정
+    public MemberResponseDto updateMember(String intro) {
+        MemberResponseDto memberResponseDto = new MemberResponseDto();
+
+
+
+
+        return memberResponseDto;
     }
 }
