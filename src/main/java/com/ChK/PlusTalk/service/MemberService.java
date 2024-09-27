@@ -38,10 +38,10 @@ public class MemberService {
         Member member = Member.builder()
                 .email(memberRequestDto.getEmail())
                 .password(encodedPassword)
-                .name(memberRequestDto.getName())
-                .phone(memberRequestDto.getPhone())
-                .birthday(memberRequestDto.getBirthday())
-                .gender(memberRequestDto.getGender())
+//                .name(memberRequestDto.getName())
+//                .phone(memberRequestDto.getPhone())
+//                .birthday(memberRequestDto.getBirthday())
+//                .gender(memberRequestDto.getGender())
                 .signUpTime(LocalDateTime.now())
                 .authority(Authority.ROLE_MEMBER) // 기본 권한 설정
                 .existence(Existence.YES) // 기본 존재 상태 설정

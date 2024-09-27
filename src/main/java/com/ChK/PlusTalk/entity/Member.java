@@ -18,10 +18,10 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor // 디폴트 생성자 생성
 public class Member {
-    @Column(name = "MEMBER_ID")
+    @Id
+    @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long memberId;
-    @Id
     @Column(unique = true)
     private String email;
     private String password;
