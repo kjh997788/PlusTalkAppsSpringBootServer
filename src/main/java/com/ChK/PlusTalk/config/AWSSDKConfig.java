@@ -12,7 +12,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 public class AWSSDKConfig {
 
     // 공통 AWS 설정: 리전 및 자격 증명 공급자
-    private final Region region = Region.AP_NORTHEAST_1;  // 원하는 리전 설정
+    private final Region region = Region.AP_NORTHEAST_2;  // 원하는 리전 설정
     private final AwsCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
 
     @Bean
