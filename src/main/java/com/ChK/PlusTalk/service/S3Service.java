@@ -25,7 +25,7 @@ public class S3Service {
 
     public String generateGetPreSignedUrl(String email) {
         // 객체의 키 경로 생성
-        String bucketName = "PlusTalk-image-bucket";
+        String bucketName = "plustalk-image-bucket";
         String objectKey = String.format("image/profile/%s/%s.JPG", email, email);
 
         // 객체 존재 여부 확인
@@ -68,7 +68,7 @@ public class S3Service {
     // S3에 업로드할 수 있는 pre-signed URL 생성 메서드
     public String generatePutPreSignedUrl(String email) {
         // S3 버킷과 객체 키 설정
-        String bucketName = "PlusTalk-image-bucket";
+        String bucketName = "plustalk-image-bucket";
         String objectKey = String.format("image/profile/%s/%s.JPG", email, email);
 
         // S3Presigner 생성

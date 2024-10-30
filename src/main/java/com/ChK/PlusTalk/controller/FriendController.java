@@ -2,6 +2,7 @@ package com.ChK.PlusTalk.controller;
 
 import com.ChK.PlusTalk.dto.FriendRequestDto;
 import com.ChK.PlusTalk.dto.FriendResponseDto;
+import com.ChK.PlusTalk.dto.MemberResponseDto;
 import com.ChK.PlusTalk.service.FriendService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,5 +26,19 @@ public class FriendController {
         return ResponseEntity.status(HttpStatus.CREATED).body(friendResponseDto);
     }
 
+    @PostMapping("/list")
+    public ResponseEntity<MemberResponseDto> searchFriendByEmail(@RequestBody FriendRequestDto friendRequestDto) throws Exception {
+        String targetEmail = friendRequestDto.getMemberEmail();
+        MemberResponseDto memberResponseDto  = friendService.searchFriendByEmail(targetEmail);
+        return ResponseEntity.status(HttpStatus.OK).body(memberResponseDto);
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<FriendResponseDto> deleteFriendByEmail(@RequestBody FriendRequestDto friendRequestDto) throws Exception {
+        String memberEmail = friendRequestDto.getMemberEmail();
+        String friendEmail = friendRequestDto.getFriendMemberEmail();
+        FriendResponseDto friendResponseDto = friendService.deleteFriendByEmail(memberEmail, friendEmail);
+        return ResponseEntity.status(HttpStatus.OK).body(friendResponseDto);
+    }
 
 }
