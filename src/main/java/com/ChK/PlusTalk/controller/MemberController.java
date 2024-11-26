@@ -26,7 +26,7 @@ public class MemberController {
     @PostMapping("/register")
     public ResponseEntity<MemberResponseDto> registerMember(@RequestBody MemberRequestDto memberRequestDto) throws Exception {
         MemberResponseDto memberResponseDto = memberService.registerMember(memberRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberResponseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(memberResponseDto);
     }
 
     // 로그인
@@ -46,7 +46,7 @@ public class MemberController {
     // 특정 회원 정보 수정
     @PostMapping("/update")
     public ResponseEntity<MemberResponseDto> memberProfileUpdate(@RequestBody MemberRequestDto memberRequestDto) {
-        MemberResponseDto memberResponseDto = memberService.updateMember(memberRequestDto.getIntro());
+        MemberResponseDto memberResponseDto = memberService.updateMember(memberRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(memberResponseDto);
     }
 

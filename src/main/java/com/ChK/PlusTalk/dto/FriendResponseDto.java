@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class FriendResponseDto {
     private String memberEmail;
     private String friendMemberEmail;
+    private String name;
     private LocalDateTime friendSetTime;
     private boolean querySuccession;
 }

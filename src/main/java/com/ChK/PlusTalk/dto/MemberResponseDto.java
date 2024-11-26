@@ -26,7 +26,7 @@ public class MemberResponseDto {
     private LocalDate birthday;
     private Gender gender;
     private LocalDateTime signUpTime;
-    private String profileImgUrl;
+    private String profileImageUrl;
     private String intro;
     private Authority authority;
     private Existence existence;

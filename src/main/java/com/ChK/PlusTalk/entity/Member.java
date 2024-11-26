@@ -26,13 +26,15 @@ public class Member {
     private String email;
     private String password;
     private String name;
-    @Column(unique = true)
+//    @Column(unique = true)
     private String phone;
     private LocalDate birthday;
     @Enumerated(EnumType.STRING)
     private Gender gender;
+    @Column(name = "sign_up_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime signUpTime;
-    private String profileImgUrl;
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
     private String intro;
     @Enumerated(EnumType.STRING)
     private Authority authority;
@@ -47,7 +49,7 @@ public class Member {
         this.phone = phone;
         this.birthday = birthday;
         this.gender = gender;
-        this.signUpTime =signUpTime;
+        this.signUpTime = signUpTime != null ? signUpTime.withNano(0) : null;
         this.authority = authority;
     }
 

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -20,17 +22,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class FriendController {
     private final FriendService friendService;
 
-    @PostMapping("/make")
-    public ResponseEntity<FriendResponseDto> makeFriendByEmail(@RequestBody FriendRequestDto friendRequestDto) {
-        FriendResponseDto friendResponseDto = friendService.setFriendByEmail(friendRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(friendResponseDto);
+    @PostMapping("/search")
+    public ResponseEntity<MemberResponseDto> searchMemberByEmail(@RequestBody FriendRequestDto friendRequestDto) throws Exception {
+        String targetEmail = friendRequestDto.getMemberEmail();
+        MemberResponseDto memberResponseDto  = friendService.searchMemberByEmail(targetEmail);
+        return ResponseEntity.status(HttpStatus.OK).body(memberResponseDto);
     }
 
     @PostMapping("/list")
-    public ResponseEntity<MemberResponseDto> searchFriendByEmail(@RequestBody FriendRequestDto friendRequestDto) throws Exception {
+    public ResponseEntity<List<MemberResponseDto>> searchFriendByEmail(@RequestBody FriendRequestDto friendRequestDto) throws Exception {
         String targetEmail = friendRequestDto.getMemberEmail();
-        MemberResponseDto memberResponseDto  = friendService.searchFriendByEmail(targetEmail);
-        return ResponseEntity.status(HttpStatus.OK).body(memberResponseDto);
+        List<MemberResponseDto> friendList = friendService.searchFriendByEmail(targetEmail);
+        return ResponseEntity.status(HttpStatus.OK).body(friendList);
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<FriendResponseDto> makeFriendByEmail(@RequestBody FriendRequestDto friendRequestDto) {
+        FriendResponseDto friendResponseDto = friendService.setFriendByEmail(friendRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(friendResponseDto);
     }
 
     @PostMapping("/delete")

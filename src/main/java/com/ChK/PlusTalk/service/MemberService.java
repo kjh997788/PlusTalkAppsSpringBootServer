@@ -96,7 +96,7 @@ public class MemberService {
                         .birthday(member.getBirthday())
                         .gender(member.getGender())
                         .signUpTime(member.getSignUpTime())
-                        .profileImgUrl(s3Service.generateGetPreSignedUrl(member.getEmail()))
+                        .profileImageUrl(s3Service.generateGetPreSignedUrl(member.getEmail()))
                         .intro(member.getIntro())
                         .authority(member.getAuthority())
                         .existence(member.getExistence())
@@ -107,12 +107,51 @@ public class MemberService {
     }
 
     // 멤버 정보 수정
-    public MemberResponseDto updateMember(String intro) {
-        MemberResponseDto memberResponseDto = new MemberResponseDto();
+    public MemberResponseDto updateMember(MemberRequestDto memberRequestDto) {
+        // 이메일로 회원 조회
+        Optional<Member> optionalMember = memberRepository.findByEmail(memberRequestDto.getEmail());
+        if (optionalMember.isEmpty()) {
+            throw new RuntimeException("해당 이메일로 가입된 회원을 찾을 수 없습니다.");
+        }
 
+        Member member = optionalMember.get();
 
+        // 회원 정보 업데이트 (null이 아닌 필드만 업데이트)
+        if (memberRequestDto.getName() != null) {
+            member.setName(memberRequestDto.getName());
+        }
+        if (memberRequestDto.getPhone() != null) {
+            member.setPhone(memberRequestDto.getPhone());
+        }
+        if (memberRequestDto.getBirthday() != null) {
+            member.setBirthday(memberRequestDto.getBirthday());
+        }
+        if (memberRequestDto.getGender() != null) {
+            member.setGender(memberRequestDto.getGender());
+        }
+        if (memberRequestDto.getIntro() != null) {
+            member.setIntro(memberRequestDto.getIntro());
+        }
+        if (memberRequestDto.getProfileImageUrl() != null) {
+            member.setProfileImageUrl(memberRequestDto.getProfileImageUrl());
+        }
 
+        // 수정된 회원 정보를 저장
+        Member updatedMember = memberRepository.save(member);
 
-        return memberResponseDto;
+        // 수정된 회원 정보를 MemberResponseDto로 변환하여 반환
+        return MemberResponseDto.builder()
+                .email(updatedMember.getEmail())
+                .name(updatedMember.getName())
+                .phone(updatedMember.getPhone())
+                .birthday(updatedMember.getBirthday())
+                .gender(updatedMember.getGender())
+                .signUpTime(updatedMember.getSignUpTime())
+                .profileImageUrl(updatedMember.getProfileImageUrl())
+                .intro(updatedMember.getIntro())
+                .authority(updatedMember.getAuthority())
+                .existence(updatedMember.getExistence())
+                .build();
     }
+
 }

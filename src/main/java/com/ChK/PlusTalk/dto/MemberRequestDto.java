@@ -27,6 +27,7 @@ public class MemberRequestDto {
     private String phone;
     private LocalDate birthday;
     private String intro;
+    private String profileImageUrl;
     private Gender gender;
     private Authority authority;
 

@@ -13,12 +13,13 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class Friend {
-
-    private String memberEmail;
     @Id
-    @Column(name = "FRIEND_NUM")
+    @Column(name = "friend_num")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long friendNum;
+    private String memberEmail;
     private String friendMemberEmail;
+    private String profileImageURL;
+    private String name;
     private LocalDateTime friendSetTime;
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +24,47 @@ public class FriendService {
     private final FriendRepository friendRepository;
     private final MemberRepository memberRepository;
     private final S3Service s3Service;
+
+    public MemberResponseDto searchMemberByEmail(String searchingEmail) throws Exception {
+        Optional<Member> optionalMember =memberRepository.findByEmail(searchingEmail);
+        if (optionalMember.isPresent()){
+            Member member = optionalMember.get();
+            return MemberResponseDto.builder()
+                    .email(member.getEmail())
+                    .name(member.getName())
+//                    .birthday(member.getBirthday())
+                    .profileImageUrl(s3Service.generateGetPreSignedUrl(member.getEmail()))
+//                    .intro(member.getIntro())
+                    .build();
+        } else {
+            throw new Exception("회원 정보를 찾을 수 없습니다.");
+        }
+    }
+
+    public List<MemberResponseDto> searchFriendByEmail(String memberEmail) throws Exception {
+        // 특정 회원이 추가한 모든 친구를 조회
+        List<Friend> friendList = friendRepository.findAllByMemberEmail(memberEmail);
+
+        if (friendList.isEmpty()) {
+            throw new Exception("친구 목록이 없습니다.");
+        }
+
+        // 친구 목록을 MemberResponseDto 리스트로 변환
+        List<MemberResponseDto> friendResponseList = friendList.stream().map(friend -> {
+            Optional<Member> optionalMember = memberRepository.findByEmail(friend.getFriendMemberEmail());
+            if (optionalMember.isPresent()) {
+                Member friendMember = optionalMember.get();
+                return MemberResponseDto.builder()
+                        .email(friendMember.getEmail())
+                        .name(friendMember.getName())
+                        .profileImageUrl(s3Service.generateGetPreSignedUrl(friendMember.getEmail()))
+                        .build();
+            }
+            return null;
+        }).filter(dto -> dto != null).toList();
+
+        return friendResponseList;
+    }
 
     public FriendResponseDto setFriendByEmail(FriendRequestDto friendRequestDto) {
         Friend friend = new Friend();
@@ -35,24 +77,8 @@ public class FriendService {
         friendResponseDto.setMemberEmail(savedFriend.getMemberEmail());
         friendResponseDto.setFriendMemberEmail(savedFriend.getFriendMemberEmail());
         friendResponseDto.setFriendSetTime(savedFriend.getFriendSetTime());
-
+        friendResponseDto.setQuerySuccession(true);
         return friendResponseDto;
-    }
-
-    public MemberResponseDto searchFriendByEmail(String searchingEmail) throws Exception {
-        Optional<Member> optionalMember =memberRepository.findByEmail(searchingEmail);
-        if (optionalMember.isPresent()){
-            Member member = optionalMember.get();
-            return MemberResponseDto.builder()
-                    .email(member.getEmail())
-                    .name(member.getName())
-                    .birthday(member.getBirthday())
-                    .profileImgUrl(s3Service.generateGetPreSignedUrl(member.getEmail()))
-                    .intro(member.getIntro())
-                    .build();
-        } else {
-            throw new Exception("회원 정보를 찾을 수 없습니다.");
-        }
     }
 
     public FriendResponseDto deleteFriendByEmail(String memberEmail, String friendEmail) throws Exception {
