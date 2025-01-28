@@ -51,9 +51,10 @@ public class MemberController {
     }
 
     // 특정 회원 프로필 이미지 저장, 수정
-    @PostMapping("/imageuploadurl")
+    @PostMapping("/profile-image-upload-url")
     public ResponseEntity<String> memberProfileImageUpdate(@RequestBody MemberRequestDto memberRequestDto) {
-        String preSignedUrl = s3Service.generatePutPreSignedUrl(memberRequestDto.getEmail());
+        long memberId = memberService.findMemberIdByMemberEmail(memberRequestDto.getEmail());
+        String preSignedUrl = s3Service.generatePutPreSignedUrlForMemberProfileImage(memberId);
         return ResponseEntity.status(HttpStatus.OK).body(preSignedUrl);
     }
 

@@ -23,10 +23,10 @@ public class S3Service {
         this.s3Client = s3Client;
     }
 
-    public String generateGetPreSignedUrl(String email) {
+    public String generateGetPreSignedUrl(long memberId) {
         // 객체의 키 경로 생성
         String bucketName = "plustalk-image-bucket";
-        String objectKey = String.format("image/profile/%s/%s.JPG", email, email);
+        String objectKey = String.format("image/profile/%s/%s.JPG", memberId, memberId);
 
         // 객체 존재 여부 확인
         try {
@@ -66,10 +66,10 @@ public class S3Service {
     }
 
     // S3에 업로드할 수 있는 pre-signed URL 생성 메서드
-    public String generatePutPreSignedUrl(String email) {
+    public String generatePutPreSignedUrlForMemberProfileImage(long memberId) {
         // S3 버킷과 객체 키 설정
         String bucketName = "plustalk-image-bucket";
-        String objectKey = String.format("image/profile/%s/%s.JPG", email, email);
+        String objectKey = String.format("image/profile/%s/%s.JPG", memberId, memberId);
 
         // S3Presigner 생성
         S3Presigner presigner = S3Presigner.create();

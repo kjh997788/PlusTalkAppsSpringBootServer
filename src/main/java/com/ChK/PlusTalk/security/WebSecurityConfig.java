@@ -40,7 +40,7 @@ public class WebSecurityConfig {
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         // 경로에 대해 인증 없이 접근을 허용
-                .requestMatchers("/member/**", "/friend/**", "/status").permitAll() // 어떤 패스로 들어올 때 접근을 허용해줄건지
+                .requestMatchers("/**", "/status").permitAll() // 어떤 패스로 들어올 때 접근을 허용해줄건지
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated());
 

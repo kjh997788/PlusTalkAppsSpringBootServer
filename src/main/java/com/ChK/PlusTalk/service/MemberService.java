@@ -96,7 +96,7 @@ public class MemberService {
                         .birthday(member.getBirthday())
                         .gender(member.getGender())
                         .signUpTime(member.getSignUpTime())
-                        .profileImageUrl(s3Service.generateGetPreSignedUrl(member.getEmail()))
+                        .profileImageUrl(s3Service.generateGetPreSignedUrl(member.getMemberId()))
                         .intro(member.getIntro())
                         .authority(member.getAuthority())
                         .existence(member.getExistence())
@@ -152,6 +152,16 @@ public class MemberService {
                 .authority(updatedMember.getAuthority())
                 .existence(updatedMember.getExistence())
                 .build();
+    }
+
+    public long findMemberIdByMemberEmail(String email) {
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            return member.getMemberId();
+        } else {
+            return 0;
+        }
     }
 
 }

@@ -33,7 +33,7 @@ public class FriendService {
                     .email(member.getEmail())
                     .name(member.getName())
 //                    .birthday(member.getBirthday())
-                    .profileImageUrl(s3Service.generateGetPreSignedUrl(member.getEmail()))
+                    .profileImageUrl(s3Service.generateGetPreSignedUrl(member.getMemberId()))
 //                    .intro(member.getIntro())
                     .build();
         } else {
@@ -57,7 +57,7 @@ public class FriendService {
                 return MemberResponseDto.builder()
                         .email(friendMember.getEmail())
                         .name(friendMember.getName())
-                        .profileImageUrl(s3Service.generateGetPreSignedUrl(friendMember.getEmail()))
+                        .profileImageUrl(s3Service.generateGetPreSignedUrl(friendMember.getMemberId()))
                         .build();
             }
             return null;

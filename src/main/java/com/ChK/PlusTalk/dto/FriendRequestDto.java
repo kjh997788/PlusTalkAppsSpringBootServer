@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL) // null인 필드는 JSON에서 제외
+//@JsonInclude(JsonInclude.Include.NON_NULL) // null인 필드는 JSON에서 제외
 public class FriendRequestDto {
     private String memberEmail;
     private String friendMemberEmail;

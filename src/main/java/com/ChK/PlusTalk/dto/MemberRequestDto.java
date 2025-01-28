@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL) // null인 필드는 JSON에서 제외
+//@JsonInclude(JsonInclude.Include.NON_NULL) // null인 필드는 JSON에서 제외
 public class MemberRequestDto {
     private String email;
     private String password;
