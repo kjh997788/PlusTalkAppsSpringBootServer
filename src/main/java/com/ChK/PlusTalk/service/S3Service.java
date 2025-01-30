@@ -1,6 +1,5 @@
 package com.ChK.PlusTalk.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -8,90 +7,117 @@ import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
-
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import java.time.Duration;
-import java.time.LocalDateTime;
 
 @Service
 public class S3Service {
     private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
+    private static final String BUCKET_NAME = "plustalk-image-bucket"; // ✅ 버킷 이름을 필드로 정의
 
     @Autowired
-    public S3Service(S3Client s3Client) {
+    public S3Service(S3Client s3Client, S3Presigner s3Presigner) {
         this.s3Client = s3Client;
+        this.s3Presigner = s3Presigner; // ✅ S3Presigner를 의존성 주입 받아 사용
     }
 
+    /**
+     * 특정 사용자의 프로필 이미지를 위한 Pre-Signed URL을 생성
+     */
     public String generateGetPreSignedUrl(long memberId) {
-        // 객체의 키 경로 생성
-        String bucketName = "plustalk-image-bucket";
         String objectKey = String.format("image/profile/%s/%s.JPG", memberId, memberId);
 
         // 객체 존재 여부 확인
         try {
-            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
-                    .bucket(bucketName)
+            s3Client.headObject(HeadObjectRequest.builder()
+                    .bucket(BUCKET_NAME)
                     .key(objectKey)
-                    .build();
-
-            s3Client.headObject(headObjectRequest);
-//            HeadObjectResponse headObjectResponse = s3Client.headObject(headObjectRequest);
-
+                    .build());
         } catch (NoSuchKeyException e) {
-            // 객체가 존재하지 않으면 "null" 반환
-            return null;
+            return null; // 객체가 존재하지 않으면 null 반환
         } catch (Exception e) {
-            // 기타 예외 발생 시에도 "null" 반환
-            return null;
+            return null; // 기타 예외 발생 시에도 null 반환
         }
 
-        // 객체가 존재하면 S3Presigner를 사용하여 프리사인드 URL 생성
-        S3Presigner presigner = S3Presigner.create();
-
+        // Pre-Signed URL 생성
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
+                .bucket(BUCKET_NAME)
                 .key(objectKey)
                 .build();
 
         GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(60)) // URL의 유효 기간 설정
+                .signatureDuration(Duration.ofMinutes(60)) // 60분 동안 유효
                 .getObjectRequest(getObjectRequest)
                 .build();
 
-        PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(getObjectPresignRequest);
+        PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(getObjectPresignRequest);
 
-        // 프리사인드 URL 반환
         return presignedRequest.url().toString();
     }
 
-    // S3에 업로드할 수 있는 pre-signed URL 생성 메서드
+    /**
+     * 특정 사용자의 프로필 이미지를 업로드하기 위한 Pre-Signed URL을 생성
+     */
     public String generatePutPreSignedUrlForMemberProfileImage(long memberId) {
-        // S3 버킷과 객체 키 설정
-        String bucketName = "plustalk-image-bucket";
         String objectKey = String.format("image/profile/%s/%s.JPG", memberId, memberId);
 
-        // S3Presigner 생성
-        S3Presigner presigner = S3Presigner.create();
-
-        // PutObjectRequest 생성
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
+                .bucket(BUCKET_NAME)
                 .key(objectKey)
-//                .contentType("audio/mpeg")  // Content-Type 설정 - 필요시 추가
                 .build();
 
-        // Pre-signed URL 생성 요청 설정
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(60)) // URL의 유효 기간 설정
+                .signatureDuration(Duration.ofMinutes(60)) // 60분 동안 유효
                 .putObjectRequest(putObjectRequest)
                 .build();
 
-        // Pre-signed URL 생성
-        PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
+        PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
 
-        // Pre-signed URL 반환
         return presignedRequest.url().toString();
     }
 
+    /**
+     * 특정 채팅방의 이미지 메시지를 다운로드할 수 있는 Pre-Signed URL을 생성
+     */
+    public String generatePresignedUrlForChatImage(String chatRoomId, int messageId) {
+        String objectKey = "image/chatroom/" + chatRoomId + "/" + messageId + ".JPG";
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(BUCKET_NAME)
+                .key(objectKey)
+                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(60)) // 60분 동안 유효
+                .getObjectRequest(getObjectRequest)
+                .build();
+
+        PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
+
+        return presignedRequest.url().toString();
+    }
+
+    /**
+     *  이미지 업로드를 위한 Pre-Signed URL 생성
+     */
+    public String generatePresignedUrlForChatImageUpload(String chatRoomId, int messageId) {
+        String objectKey = "image/chatroom/" + chatRoomId + "/" + messageId +".JPG";
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(BUCKET_NAME)
+                .key(objectKey)
+//                .contentType("image/JPG") // 기본 Content-Type 설정
+                .build();
+
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(60)) // 60분 동안 유효
+                .putObjectRequest(putObjectRequest)
+                .build();
+
+        PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
+
+        return presignedRequest.url().toString();
+    }
 }
