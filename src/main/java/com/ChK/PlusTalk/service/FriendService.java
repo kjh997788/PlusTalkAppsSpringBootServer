@@ -67,32 +67,41 @@ public class FriendService {
     }
 
     public FriendResponseDto setFriendByEmail(FriendRequestDto friendRequestDto) {
+        // 친구 관계가 이미 존재하는지 확인
+        Optional<Friend> existingFriend = friendRepository.findByMemberEmailAndFriendMemberEmail(
+                friendRequestDto.getMemberEmail(),
+                friendRequestDto.getFriendMemberEmail()
+        );
+
+        if (existingFriend.isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 친구");
+        }
+
         Friend friend = new Friend();
         friend.setMemberEmail(friendRequestDto.getMemberEmail());
         friend.setFriendMemberEmail(friendRequestDto.getFriendMemberEmail());
         friend.setFriendSetTime(LocalDateTime.now());
+
         Friend savedFriend = friendRepository.save(friend);
 
-        FriendResponseDto friendResponseDto = new FriendResponseDto();
-        friendResponseDto.setMemberEmail(savedFriend.getMemberEmail());
-        friendResponseDto.setFriendMemberEmail(savedFriend.getFriendMemberEmail());
-        friendResponseDto.setFriendSetTime(savedFriend.getFriendSetTime());
-        friendResponseDto.setQuerySuccession(true);
-        return friendResponseDto;
+        return FriendResponseDto.builder()
+                .memberEmail(savedFriend.getMemberEmail())
+                .friendMemberEmail(savedFriend.getFriendMemberEmail())
+                .friendSetTime(savedFriend.getFriendSetTime())
+                .build();
     }
 
     public FriendResponseDto deleteFriendByEmail(String memberEmail, String friendEmail) throws Exception {
-        // 먼저 친구 관계를 찾습니다
+        // 먼저 친구 관계를 찾음
         Optional<Friend> optionalFriend = friendRepository.findByMemberEmailAndFriendMemberEmail(memberEmail, friendEmail);
 
         if (optionalFriend.isPresent()) {
-            // 존재하면 삭제하고 응답을 구성합니다
+            // 존재하면 삭제하고 응답을 구성
             friendRepository.deleteByMemberEmailAndFriendMemberEmail(memberEmail, friendEmail);
 
             FriendResponseDto friendResponseDto = FriendResponseDto.builder()
                     .memberEmail(memberEmail)
                     .friendMemberEmail(friendEmail)
-                    .querySuccession(true)
                     .build();
 
             return friendResponseDto;

@@ -31,6 +31,10 @@ public class MemberService {
     private final S3Service s3Service;
 
     public MemberResponseDto registerMember(MemberRequestDto memberRequestDto) {
+        if (memberRepository.findByEmail(memberRequestDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("이미 가입된 이메일");
+        }
+
         // 패스워드 암호화
         String encodedPassword = passwordEncoder.encode(memberRequestDto.getPassword());
 

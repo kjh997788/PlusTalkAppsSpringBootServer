@@ -17,5 +17,4 @@ public class FriendResponseDto {
     private String friendMemberEmail;
     private String name;
     private LocalDateTime friendSetTime;
-    private boolean querySuccession;
 }
