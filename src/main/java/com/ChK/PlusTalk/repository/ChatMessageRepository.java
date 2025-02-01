@@ -34,7 +34,7 @@ public class ChatMessageRepository {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 특정 메시지가 존재하는지 확인
+    // 특정 메시지가 존재하는지 확인
     public Optional<ChatMessage> findMessageById(String chatRoomId, int messageId) {
         GetItemRequest getRequest = GetItemRequest.builder()
                 .tableName(TABLE_NAME)
