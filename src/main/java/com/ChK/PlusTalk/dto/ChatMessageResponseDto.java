@@ -16,6 +16,6 @@ public class ChatMessageResponseDto {
     private String messageText;
     private String imageUrl;
 
-    @JsonProperty("isImage")  // ✅ JSON에서 필드명을 `isImage`로 강제 지정
+    @JsonProperty("isImage")  // JSON에서 필드명을 `isImage`로 강제 지정
     private boolean isImage;
 }
