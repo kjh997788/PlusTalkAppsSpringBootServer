@@ -72,22 +72,22 @@ public class ChatMessageService {
     }
 
     public boolean deleteMessage(String chatRoomId, int messageId, String memberEmail) {
-        // ✅ messageId로 메시지 조회
+        // messageId로 메시지 조회
         Optional<ChatMessage> messageOptional = chatMessageRepository.findMessageById(chatRoomId, messageId);
 
-        // ✅ 존재하지 않으면 오류 반환
+        // 존재하지 않으면 오류 반환
         if (messageOptional.isEmpty()) {
             throw new IllegalArgumentException("해당 메시지가 존재하지 않습니다.");
         }
 
         ChatMessage message = messageOptional.get();
 
-        // ✅ senderEmail과 memberEmail이 일치하는지 확인
+        // senderEmail과 memberEmail이 일치하는지 확인
         if (!message.getSenderEmail().equals(memberEmail)) {
             return false; // 삭제 권한 없음 (403 오류 발생)
         }
 
-        // ✅ 삭제 수행
+        // 삭제 수행
         return chatMessageRepository.deleteMessage(chatRoomId, messageId);
     }
 
