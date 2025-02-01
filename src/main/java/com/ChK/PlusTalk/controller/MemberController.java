@@ -81,7 +81,7 @@ public class MemberController {
                     .body(Map.of(
                             "status", 200,
                             "message", "회원 정보 조회 성공",
-                            "data", memberResponseDto // ✅ DTO를 직접 반환
+                            "data", memberResponseDto
                     ));
         } catch (Exception e) {
             return ResponseEntity
@@ -104,7 +104,7 @@ public class MemberController {
                     .body(Map.of(
                             "status", 200,
                             "message", "회원 정보 수정 성공",
-                            "data", memberResponseDto // ✅ DTO 직접 반환
+                            "data", memberResponseDto
                     ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity
