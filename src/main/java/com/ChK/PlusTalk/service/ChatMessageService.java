@@ -39,7 +39,7 @@ public class ChatMessageService {
 
     // 메세지 저장
     public ChatMessageResponseDto createTextMessage(ChatMessageRequestDto requestDto) {
-        // ✅ messageId 중복 검사
+        // messageId 중복 검사
         Optional<ChatMessage> existingMessage = chatMessageRepository.findMessageById(requestDto.getChatRoomId(), requestDto.getMessageId());
         if (existingMessage.isPresent()) {
             throw new IllegalArgumentException("messageId 오류");
